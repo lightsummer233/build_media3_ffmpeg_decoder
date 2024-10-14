@@ -6,7 +6,7 @@ on:
       ANDROID_NDK:
         description: "Android NDK"
         required: true
-        default: 'r27'
+        default: 'r28-beta1'
       ANDROID_ABI:
         description: "Android ABI"
         required: true
@@ -18,7 +18,7 @@ on:
       FFMPEG_BRANCH:
         description: "FFmpeg branch"
         required: true
-        default: 'release/7.0'
+        default: 'release/7.1'
       MEDIA3_BRANCH:
         description: "media3 branch"
         required: true
