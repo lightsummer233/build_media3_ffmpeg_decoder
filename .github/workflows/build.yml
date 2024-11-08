@@ -23,6 +23,21 @@ on:
         description: "media3 branch"
         required: true
         default: 'release'
+      FFMPEG_ENABLE_GPL:
+        description: "Enable FFmpeg GPL"
+        required: true
+        default: false
+        type: boolean
+      FFMPEG_ENABLE_VERSION_3:
+        description: "Enable FFmpeg (L)GPL version 3"
+        required: true
+        default: false
+        type: boolean
+      FFMEPG_ENABLE_NONFREE:
+        description: "Enable FFmpeg nonfree"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -61,11 +76,20 @@ jobs:
           ANDROID_ABI=${{ github.event.inputs.ANDROID_ABI }}
           ENABLED_DECODERS=(${{ github.event.inputs.ENABLED_DECODERS }})
           cd "$GITHUB_WORKSPACE"/media/libraries/decoder_ffmpeg/ffmpeg
-          git checkout ${{ github.event.inputs.FFMPEG_BRANCH }} && \
+          git checkout ${{ github.event.inputs.FFMPEG_BRANCH }}
           FFMPEG_PATH="$(pwd)"
-          cd "${FFMPEG_MODULE_PATH}/jni" && \
+          cd "${FFMPEG_MODULE_PATH}/jni"
           ln -s "$FFMPEG_PATH" ffmpeg
-          cd "${FFMPEG_MODULE_PATH}/jni" && \
+          cd "${FFMPEG_MODULE_PATH}/jni"
+          if [ ${{ github.event.inputs.FFMPEG_ENABLE_GPL }} = true ]; then
+            sed -i '/--disable-vulkan/a\    --enable-gpl' build_ffmpeg.sh
+          fi
+          if [ ${{ github.event.inputs.FFMPEG_ENABLE_VERSION_3 }} = true ]; then
+            sed -i '/--disable-vulkan/a\    --enable-version3' build_ffmpeg.sh
+          fi
+          if [ ${{ github.event.inputs.FFMEPG_ENABLE_NONFREE }} = true ]; then
+            sed -i '/--disable-vulkan/a\    --enable-nonfree' build_ffmpeg.sh
+          fi
           ./build_ffmpeg.sh "${FFMPEG_MODULE_PATH}" "${NDK_PATH}" "${HOST_PLATFORM}" "${ANDROID_ABI}" "${ENABLED_DECODERS[@]}"
 
       - name: Build FFmpeg aar
