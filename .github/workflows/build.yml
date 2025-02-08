@@ -6,7 +6,7 @@ on:
       ANDROID_NDK:
         description: "Android NDK"
         required: true
-        default: 'r28-beta2'
+        default: 'r28'
       ANDROID_ABI:
         description: "Android ABI"
         required: true
@@ -48,18 +48,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'temurin'
 
-      - name: Set up Android NDK
+      - name: Setup Android NDK
         run: |
           cd "$GITHUB_WORKSPACE"
           wget -q https://dl.google.com/android/repository/android-ndk-${{ github.event.inputs.ANDROID_NDK }}-linux.zip
           unzip android-ndk-${{ github.event.inputs.ANDROID_NDK }}-linux.zip &>/dev/null
           rm -rf android-ndk-${{ github.event.inputs.ANDROID_NDK }}-linux.zip
+
+      - name: Setup Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Clone repositories
         run: |
